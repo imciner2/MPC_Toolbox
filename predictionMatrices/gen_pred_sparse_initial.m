@@ -9,9 +9,10 @@ function [ H ] = gen_pred_sparse_initial( A, B, N )
 %   [ x_0, u_0, x_1, u_1, ..., u_(N-1), x_N ]
 %
 % This prediction matrix formulation is described inside of 
-%   Hartley, E. N., et. al. (2014). Predictive Control Using an FPGA With
-%   Application to Aircraft Control. IEEE Transactions on Control Systems
-%   Technology, 22(3), 1006–1017.
+%   E. N. Hartley, J. L. Jerez, A. Suardi, J. M. Maciejowski,
+%   E. C. Kerrigan, and G. A. Constantinides, “Predictive Control Using
+%   an FPGA With Application to Aircraft Control,” IEEE Trans. Control
+%   Syst. Technol., vol. 22, no. 3, pp. 1006–1017, 2014.
 %
 % Usage:
 %   [ H ] = gen_pred_sparse_initial( A, B, N );
