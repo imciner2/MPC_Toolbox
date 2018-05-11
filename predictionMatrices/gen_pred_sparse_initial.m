@@ -42,20 +42,29 @@ function [ H ] = gen_pred_sparse_initial( A, B, N )
 %% Create the matrix block to use
 I = eye(numStates);
 Z = zeros(numStates, numInputs);
-component = [-I, Z;
-              A, B];
+comp1 = [-I, Z];
+comp2 = [ A, B];
 
 
 %% Create the main part of the Matrix
-H = speye(N);
-H = kron(H, component);
+H = speye(N+1);
+H = kron(H,comp1);
+
+%% Remove the last columns
+H = H(:, 1:(end-numInputs));
+
+%% Add in the system dynamics
+G = speye(N);
+G = kron(G, comp2);
+
+[~, c] = size(H);
+Z1 = zeros( numStates, c);
+Z2 = zeros(numStates*N, numStates);
+G = [Z1;
+      G, Z2];
+H = H + G;
 
 
-%% Add on the last columns of the matrix
-Z = zeros(N*2*numStates - numStates, numStates);
-comp = [Z;
-       -I];
-H = [ H, comp];
 
 end
 
