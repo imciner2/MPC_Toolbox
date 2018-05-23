@@ -57,8 +57,8 @@ end
 
 
 %% Create the first row of all zeros
-H = [sparse(numStates, numInputs*N);
-     H];
+% H = [sparse(numStates, numInputs*N);
+%      H];
 
 end
 

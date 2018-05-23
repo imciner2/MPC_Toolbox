@@ -1,4 +1,4 @@
-function [ H ] = condensed_hessian_gen( A, B, Q, R, N )
+function [ H ] = condensed_hessian_gen( A, B, Q, P, R, N )
 %CONDENSED_HESSIAN_GEN Generate the condensed Hessian matrix
 %
 % Create the condensed Hessian matrix for the linear time-invariant MPC
@@ -6,13 +6,14 @@ function [ H ] = condensed_hessian_gen( A, B, Q, R, N )
 %
 %
 % Usage:
-%   [ H ] = CONDENSED_HESSIAN_GEN( A, B, Q, R, N )
+%   [ H ] = CONDENSED_HESSIAN_GEN( A, B, Q, P, R, N )
 %
 % Inputs:
 %   A - The state transition matrix
 %   B - The input mapping matrix
 %   Q - The state weighting matrix
 %   R - The input weighting matrix
+%   P - The final state weighting matrix
 %   N - The horizon length
 %
 % Outputs:
@@ -26,6 +27,7 @@ function [ H ] = condensed_hessian_gen( A, B, Q, R, N )
 %
 % Revision History
 %   1.0 - Initial release  
+%	1.1 - Added final state cost as separate input
 
 
 %% Create the prediction matrix gamma
@@ -33,7 +35,9 @@ gamma = condensed_prediction_gen(A, B, N);
 
 
 %% Create the diagonal matrices for the Q and R matrices
-Qbar = kron(eye(N+1), Q);
+Qbar = kron(eye(N-1), Q);
+Qbar = blkdiag(Qbar, P);
+
 Rbar = kron(eye(N), R);
 
 
