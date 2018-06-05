@@ -1,5 +1,47 @@
 function [ u, varargout  ] = fgm_quad( H, b, projOp, L, mu, Imax )
-
+%FGM_QUAD Solve the quadratic program using the Fast Gradient Method
+%
+% This function uses the Fast Gradient Method (FGM) to solve a constrained 
+% quadratic program. The constraints are handled through a projection
+% operation, which is passed in as a function reference. The algorithm is
+% based on the one presented in
+%   J. L. Jerez, P. J. Goulart, S. Richter, G. A. Constantinides,
+%   E. C. Kerrigan, and M. Morari, “Embedded Online Optimization for Model
+%   Predictive Control at Megahertz Rates,” IEEE Transactions on Automatic
+%   Control, vol. 59, no. 12, pp. 3238–3251, 2014.
+%
+%
+% The projection function takes in a single vector of variables, and then
+% outputs a single vector of the variables after they are projected into
+% the feasible space. For example, to implement box constraints -5 <= x <= 5,
+% the projection function is
+%   projOp = @(x) min( 5, max(-5, x) );
+%
+%
+% Usage:
+%   [ u ] = FGM_QUAD( H, b, projOp, L, mu, Imax )
+%   [ u, r ] = FGM_QUAD( H, b, projOp, L, mu, Imax )
+%
+% Inputs:
+%   H      - The Hessian matrix
+%   b      - The linear term of cost function
+%   projOp - A function to perform the projection operation
+%   L      - The maximim eigenvalue of H
+%   mu     - The minimum eigenvalue of H
+%   Imax   - The maximum number of iterations to run
+%
+% Outputs:
+%   u - The optimal control trajectory
+%   r - The 2-norm of the residuals from each iteration
+%
+%
+% Created by: Ian McInerney
+% Created on: June 5, 2018
+% Version: 1.0
+% Last Modified: June 5, 2018
+%
+% Revision History
+%   1.0 - Initial release  
 
 %% Save the residuals
 if (nargout == 2)

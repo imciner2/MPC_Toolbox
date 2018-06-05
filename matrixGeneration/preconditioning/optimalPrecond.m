@@ -17,7 +17,7 @@ function [ P, E ] = optimalPrecond( H, m )
 %   [ P, E ] = OPTIMALPRECOND( H, m )
 %
 % Inputs:
-%   A - The Hessian matrix
+%   H - The Hessian matrix
 %   m - The number of inputs to the dynamical system that is described by H
 %
 % Outputs:
