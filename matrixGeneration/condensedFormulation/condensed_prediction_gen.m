@@ -27,11 +27,12 @@ function [ H ] = condensed_prediction_gen( A, B, N )
 %
 % Created by: Ian McInerney
 % Created on: January 18, 2018
-% Version: 1.0
-% Last Modified: January 18, 2018
+% Version: 1.1
+% Last Modified: June 7, 2018
 %
 % Revision History
 %   1.0 - Initial release
+%   1.1 - Sped up the computation process
 
 
 %% Figure out the size of the system
@@ -43,22 +44,18 @@ H = speye(N);
 H = kron(H, B);
 
 
-%% Create the diagonal elements of the matrix
-for i=1:1:(N-1)
-    comp = A^(i)*B;     % Create the element
-    
-    d = ones(N-i, 1);   % Create the appropriate length diagonal vector
-    D = diag(d, -i);    % Put 1s on the appropriate sub diagonal
-    
-    D = kron(D, comp);  % Put the component onto the diagonal
-    
-    H = H + D;          % Add the new matrix to H
-end
+%% Create the state matrices
+S = speye(N);
+S = kron(S, eye(numStates));
+
+d = ones(N-1, 1);   % Create the appropriate length diagonal vector
+D = diag(d, -1);    % Put 1s on the appropriate sub diagonal
+D = kron(D, -A);    % Put the component onto the diagonal
+S = S + D;
 
 
-%% Create the first row of all zeros
-% H = [sparse(numStates, numInputs*N);
-%      H];
+%% Find the final matrix
+H = S\H;
 
 end
 
