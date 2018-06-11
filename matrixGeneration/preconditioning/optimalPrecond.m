@@ -1,4 +1,4 @@
-function [ P, E ] = optimalPrecond( H, m )
+function [ P, E, k ] = optimalPrecond( H, m )
 %OPTIMALPRECOND Compute the optimal preconditioner for an MPC problem
 %
 % This function computes the optimal preconditioner for the condensed MPC
@@ -8,6 +8,10 @@ function [ P, E ] = optimalPrecond( H, m )
 %   Fast Gradient Method,” IEEE Transactions on Automatic Control,
 %   vol. 57, no. 6, pp. 1391–1403, 2012.
 %
+% The preconditioner matrix P is a left/right reconditioner (e.g. P'*H*P)
+% with a minimum eigenvalue of 1 (this is different then specified by
+% Richter). 
+%
 % This function requires the YALMIP toolbox (along with a SDP solver) to
 % solve the optimization problem.
 %
@@ -15,6 +19,7 @@ function [ P, E ] = optimalPrecond( H, m )
 % Usage:
 %   [ P ] = OPTIMALPRECOND( H, m )
 %   [ P, E ] = OPTIMALPRECOND( H, m )
+%   [ P, E, k ] = OPTIMALPRECOND( H, m )
 %
 % Inputs:
 %   H - The Hessian matrix
@@ -23,15 +28,17 @@ function [ P, E ] = optimalPrecond( H, m )
 % Outputs:
 %   P - The preconditioner matrix
 %   E - The raw result of the optimization problem
+%   k - The condition number of the preconditioned matrix
 %
 %
 % Created by: Ian McInerney
 % Created on: June 5, 2018
-% Version: 1.0
-% Last Modified: June 5, 2018
+% Version: 1.1
+% Last Modified: June 11, 2018
 %
 % Revision History
 %   1.0 - Initial release  
+%   1.1 - Mde E block diagonal in the solver
 
 
 %% Make sure thayt YALMIP is installed
@@ -40,17 +47,19 @@ if ( exist('yalmiptest', 'file') ~= 2 )
 end
 
 
-%% Find the smallest eigenvalue of H
-mu = min( eig(H) );
+%% Set the smallest eigenvalue of the preconditioner
+mu = 1;
 
 
 %% Get the size of H
 [n, ~] = size(H);
+numBlocks = (n/m);
 
 
 %% Create the variables
 t = sdpvar(1,1);
-E = sdpvar(n, n);
+E = sdpvar(m, m);
+E = kron(eye(numBlocks), E);
 I = eye(n);
 
 
@@ -62,19 +71,24 @@ C = chol(H, 'lower');
 F = [ H - mu*E >= 0,
       [ E, C;
        C', t*I] >= 0,
-      E >= 0,];
+      E >= 0];
 
 
 %% Call the optimize routine
 ops = sdpsettings('verbose',0);
-optimize(F, t, ops);
+diagStruct = optimize(F, t, ops);
+
+if (diagStruct.problem ~= 0)
+    yalErr = yalmiperror(diagStruct.problem);
+    error(['YALMIP error: ', yalErr]);
+end
 
 
 %% Compute the preconditioning matrix
-E = double(E);
+E = value(E);
 P = [];
 
-for ( i=1:1:(n/m) )
+for ( i=1:1:numBlocks )
     % Extract the next block on the diagonal for analysis
     startInd = ((i-1)*m)+1;
     stopInd = (i*m);
@@ -87,4 +101,6 @@ for ( i=1:1:(n/m) )
     % Put the matrix back together
     Part = V*diag(lam)*V';
     P = blkdiag(P, Part);
+end
+
 end
