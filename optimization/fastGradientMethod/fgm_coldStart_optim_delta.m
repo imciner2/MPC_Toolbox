@@ -1,5 +1,5 @@
 function [ Delta ] = fgm_coldStart_optim_delta( L, N, G, g, H, M )
-%FGM_COLDSTART_CONSV_DELTA Compute the optimal value for delta assuming cold-starting
+%FGM_COLDSTART_OPTIM_DELTA Compute the optimal value for delta assuming cold-starting
 %
 % This function will compute the optimal value for Delta, which is used to
 % create the lower iteration bound for the Fast Gradient Method.
@@ -14,7 +14,7 @@ function [ Delta ] = fgm_coldStart_optim_delta( L, N, G, g, H, M )
 %
 %
 % Usage:
-%   [ delta ] = FGM_COLDSTART_CONSV_DELTA( L, N, G, g);
+%   [ delta ] = FGM_COLDSTART_OPTIM_DELTA( L, N, G, g);
 %
 % Inputs:
 %   L    - The largest eigenvalue of the Hessian matrix
