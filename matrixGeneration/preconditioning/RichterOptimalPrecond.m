@@ -1,5 +1,5 @@
-function [ P, E, k ] = optimalPrecond( H, m )
-%OPTIMALPRECOND Compute the optimal preconditioner for an MPC problem
+function [ P, E, k ] = RichterOptimalPrecond( H, m )
+%RICHTEROPTIMALPRECOND Compute the optimal preconditioner for an MPC problem
 %
 % This function computes the optimal preconditioner for the condensed MPC
 % problem as described by Ricther in Lemma 9 in
@@ -17,9 +17,9 @@ function [ P, E, k ] = optimalPrecond( H, m )
 %
 %
 % Usage:
-%   [ P ] = OPTIMALPRECOND( H, m )
-%   [ P, E ] = OPTIMALPRECOND( H, m )
-%   [ P, E, k ] = OPTIMALPRECOND( H, m )
+%   [ P ] = RICHTEROPTIMALPRECOND( H, m )
+%   [ P, E ] = RICHTEROPTIMALPRECOND( H, m )
+%   [ P, E, k ] = RICHTEROPTIMALPRECOND( H, m )
 %
 % Inputs:
 %   H - The Hessian matrix
@@ -33,12 +33,13 @@ function [ P, E, k ] = optimalPrecond( H, m )
 %
 % Created by: Ian McInerney
 % Created on: June 5, 2018
-% Version: 1.1
-% Last Modified: June 11, 2018
+% Version: 1.2
+% Last Modified: August 17, 2018
 %
 % Revision History
 %   1.0 - Initial release  
 %   1.1 - Mde E block diagonal in the solver
+%	1.2 - Renamed file
 
 
 %% Make sure thayt YALMIP is installed
