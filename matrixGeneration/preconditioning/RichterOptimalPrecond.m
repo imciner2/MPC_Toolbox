@@ -38,8 +38,8 @@ function [ P, E, k ] = RichterOptimalPrecond( H, m )
 %
 % Revision History
 %   1.0 - Initial release  
-%   1.1 - Mde E block diagonal in the solver
-%	1.2 - Renamed file
+%   1.1 - Made E block diagonal in the solver
+%   1.2 - Renamed file
 
 
 %% Make sure thayt YALMIP is installed
