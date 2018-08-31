@@ -1,5 +1,5 @@
-function [ H ] = condensed_cost_hessian_gen( N, A, B, Q, R, varargin )
-%CONDENSED_COST_HESSIAN_GEN Generate the Hessian matrix H
+function [ H ] = condensed_primal_cost_hessian_gen( N, A, B, Q, R, varargin )
+%CONDENSED_PRIMAL_COST_HESSIAN_GEN Generate the Hessian matrix H
 %
 % Create the condensed Hessian matrix for the cost function of the condensed
 % linear time-invariant MPC problem.
@@ -8,9 +8,9 @@ function [ H ] = condensed_cost_hessian_gen( N, A, B, Q, R, varargin )
 % If no S matrix is supplied, it defaults to 0.
 %
 % Usage:
-%   [ H ] = CONDENSED_COST_HESSIAN_GEN( N, A, B, Q, R )
-%   [ H ] = CONDENSED_COST_HESSIAN_GEN( N, A, B, Q, R, P )
-%   [ H ] = CONDENSED_COST_HESSIAN_GEN( N, A, B, Q, R, P, S )
+%   [ H ] = CONDENSED_PRIMAL_COST_HESSIAN_GEN( N, A, B, Q, R )
+%   [ H ] = CONDENSED_PRIMAL_COST_HESSIAN_GEN( N, A, B, Q, R, P )
+%   [ H ] = CONDENSED_PRIMAL_COST_HESSIAN_GEN( N, A, B, Q, R, P, S )
 %
 % Inputs:
 %   N - The horizon length
@@ -24,7 +24,7 @@ function [ H ] = condensed_cost_hessian_gen( N, A, B, Q, R, varargin )
 % Outputs:
 %   H - The Hessian matrix
 %
-% See also CONDENSED_COST_LINEAR_GEN
+% See also CONDENSED_PRIMAL_COST_LINEAR_GEN
 %
 % Created by: Ian McInerney
 % Created on: May 21, 2018
@@ -33,7 +33,7 @@ function [ H ] = condensed_cost_hessian_gen( N, A, B, Q, R, varargin )
 %
 % Revision History
 %   1.0 - Initial release  
-%	1.1 - Added final state cost as separate input
+%   1.1 - Added final state cost as separate input
 %   1.2 - Added S term and rearranged inputs
 
 [n, m] = size(B);

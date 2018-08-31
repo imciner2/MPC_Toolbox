@@ -1,5 +1,5 @@
-function [ J ] = condensed_cost_linear_gen( N, A, B, Q, varargin )
-%CONDENSED_COST_LINEAR_GEN Generate the linear term matrix J
+function [ J ] = condensed_primal_cost_linear_gen( N, A, B, Q, varargin )
+%CONDENSED_PRIMAL_COST_LINEAR_GEN Generate the linear term matrix J
 %
 % Create the matrix for the linear term in the cost function of the condensed 
 % linear time-invariant MPC problem.
@@ -7,8 +7,8 @@ function [ J ] = condensed_cost_linear_gen( N, A, B, Q, varargin )
 % If no P matrix is supplied, it defaults to Q.
 %
 % Usage:
-%   [ J ] = CONDENSED_COST_LINEAR_GEN( N, A, B, Q );
-%   [ J ] = CONDENSED_COST_LINEAR_GEN( N, A, B, Q, P );
+%   [ J ] = CONDENSED_PRIMAL_COST_LINEAR_GEN( N, A, B, Q );
+%   [ J ] = CONDENSED_PRIMAL_COST_LINEAR_GEN( N, A, B, Q, P );
 %
 % Inputs:
 %   N - The horizon length
@@ -20,7 +20,7 @@ function [ J ] = condensed_cost_linear_gen( N, A, B, Q, varargin )
 % Outputs:
 %   G - The linear term matrix
 %
-% See also CONDENSED_COST_HESSIAN_GEN
+% See also CONDENSED_PRIMAL_COST_HESSIAN_GEN
 %
 % Created by: Ian McInerney
 % Created on: May 22, 2018

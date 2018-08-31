@@ -1,13 +1,13 @@
-function [ G ] = condensed_constraint_coefficient_gen( N, A, B, E, varargin )
-%CONDENSED_CONSTRAINT_COEFFICIENT_GEN Generate the constraint matrix G
+function [ G ] = condensed_primal_constraint_coefficient_gen( N, A, B, E, varargin )
+%CONDENSED_PRIMAL_CONSTRAINT_COEFFICIENT_GEN Generate the constraint matrix G
 %
 % Create the condensed variable coefficient matrix for the inequality 
 % constraints of the condensed linear time-invariant MPC problem.
 %
 %
 % Usage:
-%   [ G ] = CONDENSED_CONSTRAINT_COEFFICIENT_GEN( N, A, B, E )
-%   [ G ] = CONDENSED_CONSTRAINT_COEFFICIENT_GEN( N, A, B, E, D )
+%   [ G ] = CONDENSED_PRIMAL_CONSTRAINT_COEFFICIENT_GEN( N, A, B, E )
+%   [ G ] = CONDENSED_PRIMAL_CONSTRAINT_COEFFICIENT_GEN( N, A, B, E, D )
 %
 % Inputs:
 %   N - The horizon length
