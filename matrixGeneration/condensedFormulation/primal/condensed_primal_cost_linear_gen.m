@@ -52,6 +52,6 @@ Gamma = condensed_prediction_gen(A, B, N);
 
 
 %% Create the final matrix
-G = Gamma'*Qbar*Phi;
+J = Gamma'*Qbar*Phi;
 
 end

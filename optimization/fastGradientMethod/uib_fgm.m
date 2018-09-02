@@ -33,7 +33,7 @@ function [ k, delta ] = uib_fgm( cond, L, N, eps, G, g, varargin )
 %   [ k, delta ] = UIB_FGM( cond, L, eps, G, g, N);
 %   [ k, delta ] = UIB_FGM( cond, L, eps, G, g, N, 'Cold-Conservative' );
 %   [ k, delta ] = UIB_FGM( cond, L, eps, G, g, N, 'Cold-Optimal', H, M );
-%   [ k, delta ] = UIB_FGM( cond, L, eps, G, g, N, 'Warm-Lyapunov', A, B, Q, R );
+%   [ k, delta ] = UIB_FGM( cond, L, eps, G, g, N, 'Warm-Lyapunov', sys, Q, R );
 %
 % Inputs:
 %   cond - The condition number of the Hessian matrix
@@ -48,8 +48,7 @@ function [ k, delta ] = uib_fgm( cond, L, N, eps, G, g, varargin )
 %   M    - The linear term from the cost (only needed when using 'Optimal')
 %
 %   For the Warm-Lyapunov case
-%   A    - The discrete-time state-transition matrix
-%   B    - The discrete-time input matrix
+%   sys  - The discrete-time system
 %   Q    - The state weighting matrix
 %   R    - The input weighting matrix
 %
@@ -104,14 +103,13 @@ switch (type)
     case 'Warm-Lyapunov'
         % Figure out the asymptotic condition number and use it as the
         % upper bound for delta when warm-starting MPC
-        A = o1;
-        B = o2;
-        Q = o3;
-        R = o4;
-        if ( max(max(isnan(A))) || max(max(isnan(B))) || max(max(isnan(Q))) || max(max(isnan(R))) )
-            error('Must supply A, B, Q and R if warm-start lyapunov delta computation is selected.');
+        sys = o1;
+        Q = o2;
+        R = o3;
+        if ( max(max(isnan(Q))) || max(max(isnan(R))) )
+            error('Must supply sys, Q and R if warm-start lyapunov delta computation is selected.');
         end
-        delta = condensed_primal_hessian_cond_lyap(A, B, Q, R);
+        delta = condensed_primal_hessian_cond_lyap(sys, Q, R);
         delta = delta*eps;
         
     otherwise
