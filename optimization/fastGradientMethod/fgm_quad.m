@@ -86,17 +86,17 @@ switch (stoppingCriteria)
     case 'Gradient'
         % Create a stopping criteria using the gradient method
         const = 0.5*(1/mu - 1/L);
-        termFunc = @(i, x, y, x_n, y_n) (i == 0) || (const*norm(L*(y - x_n), 2)^2 > eps) ;
+        termFunc = @(i, x, y, x_n, y_n) (i == 0) || ( (const*norm(L*(y - x_n), 2)^2) > eps) ;
     case 'Conjugate'
         % Create a stopping criteria using the conjugacy method
-        termFunc = @(i, x, y, x_n, y_n) x_n'*(H*x_n + b) + norm(H*x_n + b, 1) > eps;
+        termFunc = @(i, x, y, x_n, y_n) (x_n'*(H*x_n + b) + norm(H*x_n + b, 1)) > eps;
     case 'Iterations'
         % Create an upper-bound using the iterations
-        termFunc = @(i, x, y, x_n, y_n) i <= stoppingValue;
+        termFunc = @(i, x, y, x_n, y_n) i < eps;
     case 'Best'
         % Combine the gradient method and conjugacy method
         const = 0.5*(1/mu - 1/L);
-        termFunc = @(i, x, y, x_n, y_n) (i == 0) || ( (x_n'*(H*x_n + b) + norm(H*x_n + b, 1) > eps) && (const*norm(L*(y - x_n), 2)^2 > eps) );
+        termFunc = @(i, x, y, x_n, y_n) (i == 0) || ( ( (x_n'*(H*x_n + b) + norm(H*x_n + b, 1)) > eps ) && ( (const*norm(L*(y - x_n), 2)^2) > eps ) );
     otherwise
         error('Unknown termination criteria');
 end
@@ -150,7 +150,8 @@ while termFunc(i, x, y, x_n, y_n)
     end
     
     % Use acceleration to get the next point
-    y_n = (1 + beta)*x_n - beta*x;
+%    y_n = (1 + beta)*x_n - beta*x;
+    y_n = x_n + beta*(x_n - x);
 end
 
 

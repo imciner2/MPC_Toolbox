@@ -30,18 +30,18 @@ function [ k, delta ] = uib_fgm( cond, L, N, eps, G, g, varargin )
 %
 %
 % Usage:
-%   [ k, delta ] = UIB_FGM( cond, L, eps, G, g, N);
-%   [ k, delta ] = UIB_FGM( cond, L, eps, G, g, N, 'Cold-Conservative' );
-%   [ k, delta ] = UIB_FGM( cond, L, eps, G, g, N, 'Cold-Optimal', H, M );
-%   [ k, delta ] = UIB_FGM( cond, L, eps, G, g, N, 'Warm-Lyapunov', sys, Q, R );
+%   [ k, delta ] = UIB_FGM( cond, L, N, eps, G, g);
+%   [ k, delta ] = UIB_FGM( cond, L, N, eps, G, g, 'Cold-Conservative' );
+%   [ k, delta ] = UIB_FGM( cond, L, N, eps, G, g, 'Cold-Optimal', H, M );
+%   [ k, delta ] = UIB_FGM( cond, L, N, eps, G, g, 'Warm-Lyapunov', sys, Q, R );
 %
 % Inputs:
 %   cond - The condition number of the Hessian matrix
 %   L    - The largest eigenvalue of the Hessian matrix
+%   N    - The horizon length
 %   eps  - The suboptimality level to solve to
 %   G    - The input constraint matrix
 %   g    - The input constraint vector
-%   N    - The horizon length
 %
 %   For the Cold-Optimal case
 %   H    - The Hessian matrix (only needed when using 'Optimal')
