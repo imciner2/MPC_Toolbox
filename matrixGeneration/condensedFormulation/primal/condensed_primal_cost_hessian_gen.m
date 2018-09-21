@@ -67,6 +67,7 @@ Rbar = kron(eye(N), R);
 Sbar = kron(eye(N), S);
 
 
+
 %% Put them all together
 H = (gamma'*Qbar*gamma + gamma'*Sbar + Sbar'*gamma + Rbar);
 

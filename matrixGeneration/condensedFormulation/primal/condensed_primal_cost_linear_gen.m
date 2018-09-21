@@ -5,10 +5,12 @@ function [ J ] = condensed_primal_cost_linear_gen( N, A, B, Q, varargin )
 % linear time-invariant MPC problem.
 %
 % If no P matrix is supplied, it defaults to Q.
+% If no S matrix is supplied, it defaults to 0.
 %
 % Usage:
 %   [ J ] = CONDENSED_PRIMAL_COST_LINEAR_GEN( N, A, B, Q );
 %   [ J ] = CONDENSED_PRIMAL_COST_LINEAR_GEN( N, A, B, Q, P );
+%   [ J ] = CONDENSED_PRIMAL_COST_LINEAR_GEN( N, A, B, Q, P, S );
 %
 % Inputs:
 %   N - The horizon length
@@ -16,6 +18,7 @@ function [ J ] = condensed_primal_cost_linear_gen( N, A, B, Q, varargin )
 %   B - The input mapping matrix
 %   Q - The state weighting matrix
 %   P - The final state weighting matrix
+%   S - The state-input cross term weight matrix
 %
 % Outputs:
 %   G - The linear term matrix
@@ -30,20 +33,25 @@ function [ J ] = condensed_primal_cost_linear_gen( N, A, B, Q, varargin )
 % Revision History
 %   1.0 - Initial release  
 %   1.1 - Update the name, inputs & documentation
+%   1.2 - Added S term
 
 
 %% Parse the input arguments
 p = inputParser;
 addOptional(p, 'P', Q);
+addOptional(p, 'S', zeros(n,m));
 parse(p,varargin{:});
 
 % Extract the matrices
 P = p.Results.P;
+S = p.Results.S;
 
 
 %% Create the diagonal matrix for the Q matrix
 Qbar = kron(eye(N-1), Q);
 Qbar = blkdiag(Qbar, P);
+
+Sbar = kron(eye(N), S);
 
 
 %% Create the Phi and Gamma matrices
@@ -52,6 +60,6 @@ Gamma = condensed_prediction_gen(A, B, N);
 
 
 %% Create the final matrix
-J = Gamma'*Qbar*Phi;
+J = Gamma'*Qbar*Phi + Sbar'*Phi;
 
 end

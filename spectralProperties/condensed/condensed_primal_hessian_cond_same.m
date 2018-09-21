@@ -84,7 +84,7 @@ end
 
 
 %% Create the Hessian matrix system
-Hmsys = sys'*Q*sys + S'*sys + sys'*S + R;
+Hmsys = sys'*Q*sys + sys'*S + S'*sys + R;
 
 
 %% Find the eigenvalue extremes
@@ -92,10 +92,10 @@ try
     % Utilize the H infinity norm to find the eigenvalues
     
     % Find the largest eigenvalue
-    maxE = norm( Hmsys, 'inf' );
+    maxE = norm( Hmsys, 'inf', 1e-6 );
     
     % Find the smallest eigenvalue
-    minE = norm( inv(Hmsys), 'inf' );
+    minE = norm( inv(Hmsys), 'inf', 1e-6 );
     if ( minE ~= 0 && minE ~= inf )
         minE = 1./minE;
     end
@@ -104,7 +104,7 @@ catch
     % Something broke when using the fast way, try the slow way now
     warning('Unable to use system norms, falling back to a global search');
     
-    num = 10000;
+    num = 30;
     maxE = NaN;
     minE = NaN;
     for i = 0:1:(num-1)
@@ -112,9 +112,10 @@ catch
 
         % Compute the inverse of the system matrix at this point
         tfm = evalfr( sys, z );
+%        tfm = inv(z*I - sys.A)*sys.B;
 
         % Compute the matrix symbol
-        M_c = tfm'*Q*tfm + S'*tfm + tfm'*S + R;
+        M_c = tfm'*Q*tfm + tfm'*S + S'*tfm + R;
 
         % Compute the eigenvalues of the matrix symbol
         % abs is only here to prevent warnings, the eigenvalues should be
