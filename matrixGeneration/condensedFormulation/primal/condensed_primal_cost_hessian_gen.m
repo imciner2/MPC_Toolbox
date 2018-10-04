@@ -62,10 +62,10 @@ gamma = condensed_prediction_gen(A, B, N);
 Qbar = kron(eye(N-1), Q);
 Qbar = blkdiag(Qbar, P);
 
+Sbar = kron(eye(N-1), S);
+Sbar = blkdiag(Sbar, zeros(n,m));
+
 Rbar = kron(eye(N), R);
-
-Sbar = kron(eye(N), S);
-
 
 
 %% Put them all together

@@ -32,11 +32,11 @@ Phi = [];
 
 %% Iterate over the horizon creating the powers of A
 for (i = 1:1:N)
-    inter = inter^(i);
-    
     % Append the most recent power to the matrix
     Phi = [Phi;
            inter];
+
+    inter = A*inter;
 end
 
 end
