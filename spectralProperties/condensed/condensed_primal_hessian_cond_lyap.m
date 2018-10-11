@@ -1,4 +1,4 @@
-function [ k, varargout ] = condensed_primal_hessian_cond_lyap( sys, Q, R, varargin )
+function [ k, varargout ] = condensed_primal_hessian_cond_lyap( sys, Q, R )
 %CONDENSED_PRIMAL_HESSIAN_COND_LYAP Estimate the asymptotic condition number
 %
 % Estimate the asymptotic condition number of the condensed hessian matrix
@@ -13,13 +13,11 @@ function [ k, varargout ] = condensed_primal_hessian_cond_lyap( sys, Q, R, varar
 %   [ k ] = CONDENSED_PRIMAL_HESSIAN_COND_LYAP( sys, Q, R )
 %   [ k, maxE ] = CONDENSED_PRIMAL_HESSIAN_COND_LYAP( sys, Q, R )
 %   [ k, maxE, minE ] = CONDENSED_PRIMAL_HESSIAN_COND_LYAP( sys, Q, R )
-%   [ k, maxE, minE ] = CONDENSED_PRIMAL_HESSIAN_COND_LYAP( sys, Q, R, S )
 %
 % Inputs:
 %   sys - The discrete-time system being predicted
 %   Q - The state weighting matrix
 %   R - The input weighting matrix
-%   S - The state-input cross-term weighting matrix
 %
 % Outputs:
 %   k    - The upper bound on the condition number
@@ -51,15 +49,6 @@ D = sys.D;
 I = eye(n);
 
 
-%% Parse the input arguments
-p = inputParser;
-addOptional(p, 'S', zeros(n,m));
-parse(p,varargin{:});
-
-% Extract the matrices
-S = p.Results.S;
-
-
 %% Verify the output arguments requested
 if ( (nargout-1) > 2 )
     error('Too many outputs requested');
@@ -68,21 +57,25 @@ end
 
 
 %% Get the eigenvalue estimates for the 
-[~, maxE_q, minE_q] = condensed_primal_hessian_cond_same( sys, Q, R, S);
+[~, maxE_q, minE_q] = condensed_primal_hessian_cond_same( sys, Q, R);
 
 
-%% Compute an estimate for lambda_max of the P component
+%% Compute the eigenvalues of the correction term Hp
+% Compute the terminal weight
 P = dlyap(A', Q);
+P2 = sqrtm(P);
 
-Gp = ss(A, B, sqrtm(P)*C, zeros(n,m), 0.01);
-Gd = ss(A, B, sqrtm(Q)*C, zeros(n,m), 0.01);
+% Compute the observability gramian
+W = dgram(sys.A, sys.B);
 
-maxE_p = norm( Gp, 2)^2 - norm( Gd, 2)^2;
+% Form the correction term and compute its eigenvalues
+vv = P2*(W - sys.B*sys.B' )*P2;
+e = eig( vv );
 
 
 %% Compute the eigenvalue bounds
 minE = minE_q;
-maxE = maxE_q + maxE_p;
+maxE = maxE_q + max(e);
 
 
 %% Compute the condition number bound

@@ -84,7 +84,8 @@ end
 
 
 %% Create the Hessian matrix system
-Hmsys = sys'*Q*sys + sys'*S + S'*sys + R;
+sys1 = tf('z', sys.Ts)*sys;
+Hmsys = sys1'*Q*sys1 + sys1'*S + S'*sys1 + R;
 
 
 %% Find the eigenvalue extremes
@@ -111,8 +112,8 @@ catch
         z = exp(1j*(-pi/2 + 2*pi*i/num));
 
         % Compute the inverse of the system matrix at this point
-        tfm = evalfr( sys, z );
-%        tfm = inv(z*I - sys.A)*sys.B;
+        tfm = evalfr( sys1, z );
+%        tfm = z*inv(z*I - sys.A)*sys.B;
 
         % Compute the matrix symbol
         M_c = tfm'*Q*tfm + tfm'*S + S'*tfm + R;
