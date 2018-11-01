@@ -1,4 +1,4 @@
-function [ k, varargout ] = condensed_primal_hessian_cond_lyap( sys, Q, R )
+function [ k, varargout ] = condensed_primal_hessian_cond_lyap( sys, Q, R, varargin )
 %CONDENSED_PRIMAL_HESSIAN_COND_LYAP Estimate the asymptotic condition number
 %
 % Estimate the asymptotic condition number of the condensed hessian matrix
@@ -49,6 +49,15 @@ D = sys.D;
 I = eye(n);
 
 
+%% Parse the input arguments
+p = inputParser;
+addOptional(p, 'S', zeros(n,m));
+parse(p,varargin{:});
+
+% Extract the matrices
+S = p.Results.S;
+
+
 %% Verify the output arguments requested
 if ( (nargout-1) > 2 )
     error('Too many outputs requested');
@@ -57,7 +66,7 @@ end
 
 
 %% Get the eigenvalue estimates for the 
-[~, maxE_q, minE_q] = condensed_primal_hessian_cond_same( sys, Q, R);
+[~, maxE_q, minE_q] = condensed_primal_hessian_cond_same( sys, Q, R, S);
 
 
 %% Compute the eigenvalues of the correction term Hp

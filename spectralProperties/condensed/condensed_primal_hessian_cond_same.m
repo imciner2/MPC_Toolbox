@@ -113,7 +113,6 @@ catch
 
         % Compute the inverse of the system matrix at this point
         tfm = evalfr( sys1, z );
-%        tfm = z*inv(z*I - sys.A)*sys.B;
 
         % Compute the matrix symbol
         M_c = tfm'*Q*tfm + tfm'*S + S'*tfm + R;
@@ -128,6 +127,16 @@ catch
         minE = min( [minE, me]);
     end
 end
+
+%% Compute the correction if S is present
+W = dgram( sys.A, sys.B );
+
+B = sys.B;
+e = eig([  B'*S, eye(m);
+         S'*W*S,     S'*B]);
+
+minE = max( [0, minE - max(e)] );
+maxE = maxE - min(e);
 
 
 %% Compute the condition number
