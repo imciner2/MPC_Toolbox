@@ -128,6 +128,13 @@ catch
     end
 end
 
+
+%% Check for singularity
+if (minE <= 1e-10)
+    warning('Hessian is singular');
+    sing = 1;
+end
+
 %% Compute the correction if S is present
 W = dgram( sys.A, sys.B );
 
@@ -140,8 +147,8 @@ maxE = maxE - min(e);
 
 
 %% Compute the condition number
-if (minE <= 1e-10)
-    warning('Hessian is singular');
+if ( minE <= 1e-10 )
+    warning('Hessian is singular after correction for S');
     k = inf;
 else
     k = maxE./minE;

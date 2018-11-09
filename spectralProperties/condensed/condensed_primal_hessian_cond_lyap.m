@@ -89,7 +89,7 @@ maxE = maxE_q + max(e);
 
 %% Compute the condition number bound
 if (minE <= 1e-10)
-    warning('Hessian is singular');
+    warning('Hessian is singular after correction for P');
     k = inf;
 else
     k = maxE./minE;

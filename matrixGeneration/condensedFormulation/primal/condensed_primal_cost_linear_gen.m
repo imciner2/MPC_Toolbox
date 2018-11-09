@@ -36,6 +36,10 @@ function [ J ] = condensed_primal_cost_linear_gen( N, A, B, Q, varargin )
 %   1.2 - Added S term
 
 
+%% Get the matrix sizes
+[n, m] = size(B);
+
+
 %% Parse the input arguments
 p = inputParser;
 addOptional(p, 'P', Q);

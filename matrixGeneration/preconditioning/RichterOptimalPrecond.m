@@ -13,7 +13,8 @@ function [ P, E, k ] = RichterOptimalPrecond( H, m )
 % Richter). 
 %
 % This function requires the YALMIP toolbox (along with a SDP solver) to
-% solve the optimization problem.
+% solve the optimization problem. If the optimization problem errors, then
+% NaN is returned.
 %
 %
 % Usage:
@@ -81,7 +82,13 @@ diagStruct = optimize(F, t, ops);
 
 if (diagStruct.problem ~= 0)
     yalErr = yalmiperror(diagStruct.problem);
-    error(['YALMIP error: ', yalErr]);
+    warning(['YALMIP error: ', yalErr]);
+    
+    P = NaN;
+    E = NaN;
+    k = NaN;
+    
+    return
 end
 
 
