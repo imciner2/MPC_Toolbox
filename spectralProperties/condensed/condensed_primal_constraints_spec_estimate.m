@@ -1,4 +1,4 @@
-function [ e ] = condensed_dual_hessian_spec_estimate( sys, N, Q, R, E, varargin )
+function [ e ] = condensed_primal_constraints_spec_estimate( sys, N, E, varargin )
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -21,6 +21,7 @@ end
 if ( sys.Ts == 0 )
     error('The dynamical system must be in discrete-time');
 end
+z = tf('z', sys.Ts);
 
 
 %% Parse the input arguments
@@ -31,28 +32,26 @@ parse(p,varargin{:});
 % Extract the matrices
 D = p.Results.D;
 
-
-%% Determine the number of constraints
-[nE, ~] = size(E);
-[nD, ~] = size(D);
-
-
-%% Create the matrix symbol for the primal Hessian
-z = tf('z', sys.Ts);
-Pgam = z*sys;
-PHp = Pgam'*Q*Pgam + R;
+% Extract the number of constraints
+[nic, ~] = size(E);
+[nsc, ~] = size(D);
 
 
-%% Create the matrix symbol for the dual Hessian's similar matrix
-Dbar = [D;
-        zeros(nE, n)];
+%% Create the Toeplitz symbol's system for the dual Hessian
+sys1 = z*sys;
 
-Ebar = [zeros(nD,m);
-        E];
-
-PG = Dbar*sys + Ebar;
-
-PHd1 = PG'*PG*inv(PHp);
+if ( isempty(D) )
+    Gsys = E;
+else
+    Dsys = D*sys.A*(1/z)*sys1 + D*sys.B;
+    
+    if ( isempty(E) )
+        Gsys = Dsys;
+    else
+        Gsys = [Dsys;
+                 E];
+    end
+end
 
 
 %% Find the largest eigenvalue
@@ -61,12 +60,14 @@ for i = 0:1:(N-1)
     z = exp(1j*(-pi/2 + 2*pi*i/N));
 
     % Compute the matrix symbol at this point
-    M_c = evalfr( PHd1, z );
+    if ( isempty(D) )
+        M_c = Gsys;
+    else
+        M_c = evalfr( Gsys, z );
+    end
 
-    % Compute the eigenvalues of the matrix symbol
-    % abs is only here to prevent warnings, the eigenvalues should be
-    % positive real anyway
-    ei = abs( eig( M_c ) );
+    % Compute the singular values of the matrix symbol
+    ei = svd( M_c );
     e = [e;
          ei];
 end

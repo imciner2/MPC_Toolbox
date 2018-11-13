@@ -21,7 +21,6 @@ end
 if ( sys.Ts == 0 )
     error('The dynamical system must be in discrete-time');
 end
-z = tf('z', sys.Ts);
 
 
 %% Parse the input arguments
@@ -36,33 +35,33 @@ D = p.Results.D;
 est = p.Results.Estimate;
 nSamples = p.Results.Samples;
 
-% Extract the number of constraints
-[nic, ~] = size(E);
-[nsc, ~] = size(D);
+
+%% Determine the number of constraints
+[nE, ~] = size(E);
+[nD, ~] = size(D);
 
 
-%% Create the Toeplitz symbol's system for the dual Hessian
-sys1 = z*sys;
-Hmsys = sys1'*Q*sys1 + R;
+%% Create the matrix symbol for the primal Hessian
+z = tf('z', sys.Ts);
+Pgam = z*sys;
+PHp = Pgam'*Q*Pgam + R;
 
-if ( isempty(D) )
-    Dbar = [zeros(nic, n)];
-    Ebar = [E];
-else
-    Dbar = [D*sys.A;
-            zeros(nic, n)];
-    Ebar = [D*sys.B;
-            E];
-end
 
-Gsys = Dbar*(1/z)*sys1 + Ebar;
+%% Create the matrix symbol for the dual Hessian's similar matrix
+Dbar = [D;
+        zeros(nE, n)];
 
-Hdsys = Gsys'*Gsys*inv(Hmsys);
+Ebar = [zeros(nD,m);
+        E];
+
+PG = Dbar*sys + Ebar;
+
+PHd1 = PG'*PG*inv(PHp);
 
 
 %% Estimate the largest eigenvalue using the largest singular value
 if ( est == 1 )
-    maxE = norm( Hdsys, 'inf' );
+    maxE = norm( PHd1, 'inf' );
     return;
 end
 
@@ -74,7 +73,7 @@ for i = 0:1:(nSamples-1)
     z = exp(1j*(-pi/2 + 2*pi*i/nSamples));
 
     % Compute the matrix symbol at this point
-    M_c = evalfr( Hdsys, z );
+    M_c = evalfr( PHd1, z );
 
     % Compute the eigenvalues of the matrix symbol
     % abs is only here to prevent warnings, the eigenvalues should be
