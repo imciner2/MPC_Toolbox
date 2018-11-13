@@ -30,8 +30,6 @@ function [ G ] = condensed_primal_constraint_coefficient_gen( N, A, B, E, vararg
 %   1.0 - Initial release  
 
 
-[n, m] = size(B);
-
 %% Parse the input arguments
 p = inputParser;
 addOptional(p, 'D', []);
@@ -41,31 +39,20 @@ parse(p,varargin{:});
 D = p.Results.D;
 
 
-%% Get the condensed system matrices
+%% Find the number of constraints and the system size
+[nE, ~] = size(E);
+[nD, ~] = size(D);
+[n, m] = size(B);
+
+
+%% Get the condensed prediction matrix
 Gamma = condensed_prediction_gen(A, B, N);
-Phi = condensed_initial_gen(A, N);
-
-% Shift the Gamma matrix
-Gamma_shift = [eye(n*(N-1)), zeros(n*(N-1), n)]*Gamma;
-Gamma_shift = [zeros(n, N*m);
-               Gamma_shift];
 
 
-%% Create the matrices
-if ( isempty(D) )
-    % If no state constraints are present
-    G = kron(eye(N), E);
-    return
-elseif ( isempty(E) )
-    % No input constraints are present
-    Ebar = kron( eye(N), D*B );
-    Dbar = kron( eye(N), D*A );
-else
-    [nE, ~] = size(E);
-    Ebar = kron( eye(N), [D*B; E] );
-    Dbar = kron( eye(N), [D*A; zeros(nE, n)] );
-end
+%% Create the component matrices
+Dbar = kron( eye(N), [D; zeros(nE, n)]);
+Ebar = kron( eye(N), [zeros(nD,m); E]);
 
 
 %% Put it all together
-G = Dbar*Gamma_shift + Ebar;
+G = Dbar*Gamma + Ebar;
