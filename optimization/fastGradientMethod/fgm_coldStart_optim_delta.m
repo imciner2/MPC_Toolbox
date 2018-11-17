@@ -4,7 +4,7 @@ function [ Delta ] = fgm_coldStart_optim_delta( L, N, G, g, H, M )
 % This function will compute the optimal value for Delta, which is used to
 % create the lower iteration bound for the Fast Gradient Method.
 % This requires the YALMIP toolbox to be installed, since it is used to
-% interface to the optimization solvers
+% interface to the optimization solvers.
 %
 % This bound is derived in: 
 %   S. Richter, C. N. Jones, and M. Morari, “Computational Complexity
@@ -28,16 +28,19 @@ function [ Delta ] = fgm_coldStart_optim_delta( L, N, G, g, H, M )
 %
 % Created by: Ian McInerney
 % Created on: August 13, 2018
-% Version: 1.0
-% Last Modified: August 13, 2018
+% Version: 1.1
+% Last Modified: November 17, 2018
 %
 % Revision History
 %   1.0 - Initial release
+%   1.1 - Fixed optimization problem to be maximization
+
 
 %% Make sure thayt YALMIP is installed
 if ( exist('yalmiptest', 'file') ~= 2 )
     error('YALMIP not found. Please install YALMIP and make sure it is on the path to run this function.');
 end
+
 
 %% Extract some variable sizing information
 % r is the number of constraints in the constraint set
@@ -45,6 +48,7 @@ end
 [r, m] = size(G);
 [~, n] = size(M);
     
+
 %% Create the larger matrices for G and g
 Gl = kron( eye(N), G);
 gl = kron( ones(N,1), g);
@@ -76,7 +80,7 @@ end
 
 %% Solve the optimization problem
 ops = sdpsettings('verbose',0);
-opt = optimize(Con, Obj, ops);
+opt = optimize(Con, -Obj, ops);
 
 if (opt.problem ~= 0)
     yalErr = yalmiperror(opt.problem);
