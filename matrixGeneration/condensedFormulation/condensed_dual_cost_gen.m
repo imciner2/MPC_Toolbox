@@ -5,11 +5,11 @@ function [ Hd, Jd ] = condensed_dual_cost_gen( Hp, J, G, F )
 % of the condensed linear time-invariant MPC problem.
 %
 % Primal problem:
-%   min  u'Hpu + x0'Ju
+%   min  0.5*u'*Hp*u + x0'*J*u
 %   s.t. Gu <= Fx0 + g
 %
 % Dual problem:
-%   min  y'Hdy + ( Jdxo + g)'y
+%   min  0.5*y'*Hd*y + ( Jd*xo + g)'*y
 %   s.t. 0 <= y
 %
 %

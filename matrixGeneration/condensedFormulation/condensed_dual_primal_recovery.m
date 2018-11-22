@@ -4,11 +4,11 @@ function [ u ] = condensed_dual_primal_recovery( y, x0, Hp, J, G )
 % Recover the primal optimal solution from the dual optimal solution.
 %
 % Primal problem:
-%   min  u'Hpu + x0'Ju
+%   min  0.5*u'*Hp*u + x0'*J*u
 %   s.t. Gu <= Fx0 + g
 %
 % Dual problem:
-%   min  y'Hdy + ( Jdxo + g)'y
+%   min  0.5*y'*Hd*y + ( Jd*xo + g)'*y
 %   s.t. 0 <= y
 %
 %
@@ -47,7 +47,11 @@ end
 
 
 %% Compute the solution
-T = G'*y + J'*x0;
+T = G'*y + J*x0;
 u = Hp\(T);
+
+
+%% Negate the solution
+u = -u;
 
 end

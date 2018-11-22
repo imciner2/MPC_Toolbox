@@ -5,13 +5,13 @@ function [ H, J ] = condensed_primal_cost_gen( N, A, B, Q, R, varargin )
 % of the condensed primal form for linear time-invariant MPC problem.
 %
 % Intial optimization problem:
-%   min  x_n'Px_n + sum( x_k'Qx_k + 2x_k'Su_k + u_k'Ru_k )
-%   s.t. Dx_k <= Cd
-%        Eu_k <= Ce
+%   min  0.5*x_n'*P*x_n + 0.5*sum( x_k'*Q*x_k + 2*x_k'*S*u_k + u_k'*R*u_k )
+%   s.t. D*x_k <= Cd
+%        E*u_k <= Ce
 %
 % Resulting optimization problem:
-%   min  u'Hu + x0'Ju
-%   s.t. Gu <= Fx0 + g
+%   min  0.5*u'*H*u + x0'*J*u
+%   s.t. G*u <= F*x0 + g
 %
 % If no P matrix is supplied, it defaults to Q.
 % If no S matrix is supplied, it defaults to 0.
