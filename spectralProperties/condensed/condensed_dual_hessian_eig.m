@@ -1,6 +1,37 @@
 function [ maxE, varargout ] = condensed_dual_hessian_eig( sys, Q, R, E, varargin )
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+%CONDENSED_DUAL_HESSIAN_EIG Compute the largest eigenvalue of the dual Hessian
+%
+% Usage:
+%   [ maxE ] = CONDENSED_DUAL_HESSIAN_EIG( sys, Q, R, E );
+%   [ maxE ] = CONDENSED_DUAL_HESSIAN_EIG( sys, Q, R, E, D );
+%   [ maxE ] = CONDENSED_DUAL_HESSIAN_EIG( sys, Q, R, E, D, S );
+%   [ maxE, minE ] = CONDENSED_DUAL_HESSIAN_EIG( sys, Q, R, E, D, opts );
+%
+% Inputs:
+%   sys  - The physical system's model  
+%   Q    - The Q matrix
+%   R    - The R matrix
+%   E    - The stage input constraints
+%   D    - The stage state constraints
+%   S    - The cross-term weight matrix
+%   opts - Option pairs:
+%          'Estimate' - 1 estimates the largest eigenvalue, 0 calculates it
+%                       Defaults to 0
+%          'Samples'  - The number of points to sample to find the largest
+%                       eigenvalue. Defaults to 300
+%
+% Output:
+%   maxE - The largest eigenvalue
+%   minE - The smallest eigenvalue
+%
+%
+% Created by: Ian McInerney
+% Created on: November 18, 2018
+% Version: 1.0
+% Last Modified: November 18, 2018
+%
+% Revision History
+%   1.0 - Initial release
 
 %% Make sure it is a state-space system for easy access of the matrices
 sys = ss(sys);
@@ -26,12 +57,14 @@ end
 %% Parse the input arguments
 p = inputParser;
 addOptional(p, 'D', []);
+addOptional(p, 'S', []);
 addParameter(p, 'Estimate', 0);
 addParameter(p, 'Samples', 300);
 parse(p,varargin{:});
 
 % Extract the matrices
 D = p.Results.D;
+S = p.Results.S;
 est = p.Results.Estimate;
 nSamples = p.Results.Samples;
 
@@ -41,13 +74,7 @@ nSamples = p.Results.Samples;
 [nD, ~] = size(D);
 
 
-%% Create the matrix symbol for the primal Hessian
-z = tf('z', sys.Ts);
-Pgam = z*sys;
-PHp = Pgam'*Q*Pgam + R;
-
-
-%% Create the matrix symbol for the dual Hessian's similar matrix
+%% Create the matrix symbol for the constraints
 Dbar = [D;
         zeros(nE, n)];
 
@@ -56,6 +83,30 @@ Ebar = [zeros(nD,m);
 
 PG = Dbar*sys + Ebar;
 
+
+%% If S is present, use the triangle-inequality bound
+if ( ~isempty(S) )
+    [~, ~, mH] = condensed_primal_hessian_cond_same(sys, Q, R, S);
+    MG = sqrt( norm(PG'*PG, 'inf') );
+
+    % If the calculation of the primal value failed, this one should also
+    if (mH == inf)
+        maxE = inf;
+    else
+        maxE = MG^2./mH;
+    end
+    
+    return
+end
+
+
+%% Create the matrix symbol for the primal Hessian
+z = tf('z', sys.Ts);
+Pgam = z*sys;
+PHp = Pgam'*Q*Pgam + R;
+
+
+%% Create the matrix symbol for the dual Hessian's similar matrix
 PHd1 = PG'*PG*inv(PHp);
 
 
