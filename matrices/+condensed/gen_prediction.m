@@ -1,5 +1,5 @@
-function [ H ] = condensed_prediction_gen( A, B, N )
-%CONDENSED_PREDICTION_GEN Generate the full condensed prediction matrix
+function [ H ] = gen_prediction( A, B, N )
+%GEN_PREDICTION Generate the full condensed prediction matrix
 %
 % Generate the prediction matrix for a MPC problem that removes the state
 % variables from the optimization problem and only contains the possible
@@ -14,7 +14,7 @@ function [ H ] = condensed_prediction_gen( A, B, N )
 %
 %
 % Usage:
-%   [ H ] = CONDENSED_PREDICTION_GEN( A, B, N );
+%   [ H ] = GEN_PREDICTION( A, B, N );
 %
 % Inputs:
 %   A - The discrete-time system state transition matrix

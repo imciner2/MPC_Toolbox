@@ -1,5 +1,5 @@
-function [ G, F, g ] = condensed_primal_constraint_gen( N, A, B, E, Ce, varargin )
-%CONDENSED_PRIMAL_CONSTRAINT_GEN Generate the matrices for the condensed constraints
+function [ G, F, g ] = gen_con_ineq( N, A, B, E, Ce, varargin )
+%GEN_CON_INEQ Generate the inequality constraint matrices for the condensed formulation
 %
 % Create the condensed matrices for the inequality constraints of the
 % condensed linear time-invariant MPC problem.
@@ -15,8 +15,8 @@ function [ G, F, g ] = condensed_primal_constraint_gen( N, A, B, E, Ce, varargin
 %
 %
 % Usage:
-%   [ G, F, g ] = CONDENSED_PRIMAL_CONSTRAINT_GEN( N, A, B, E, Ce )
-%   [ G, F, g ] = CONDENSED_PRIMAL_CONSTRAINT_GEN( N, A, B, E, Ce, D, Cd )
+%   [ G, F, g ] = GEN_CON_INEQ( N, A, B, E, Ce )
+%   [ G, F, g ] = GEN_CON_INEQ( N, A, B, E, Ce, D, Cd )
 %
 % Inputs:
 %   N  - The horizon length
@@ -32,7 +32,7 @@ function [ G, F, g ] = condensed_primal_constraint_gen( N, A, B, E, Ce, varargin
 %   F - The matrix multiplying the initial state
 %   g - The constant vector
 %
-% See also CONDENSED_PRIMAL_COST_GEN
+% See also CONDENSED.PRIMAL.GEN_COST
 %
 % Created by: Ian McInerney
 % Created on: August 17, 2018
@@ -62,8 +62,8 @@ Cd = p.Results.Cd;
 
 
 %% Get the condensed system matrices
-Phi   = condensed_initial_gen(A, N);
-Gamma = condensed_prediction_gen(A, B, N);
+Phi   = condensed.gen_initial(A, N);
+Gamma = condensed.gen_prediction(A, B, N);
 
 
 %% Create the component matrices

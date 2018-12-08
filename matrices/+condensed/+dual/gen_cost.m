@@ -1,5 +1,5 @@
-function [ Hd, Jd ] = condensed_dual_cost_gen( Hp, J, G, F )
-%CONDENSED_DUAL_COST_GEN Generate the cost matrices for the dual problem
+function [ Hd, Jd ] = gen_cost( Hp, J, G, F )
+%GEN_COST Generate the cost matrices for the dual problem
 %
 % Create the condensed matrices for the cost function of the dual form
 % of the condensed linear time-invariant MPC problem.
@@ -14,7 +14,7 @@ function [ Hd, Jd ] = condensed_dual_cost_gen( Hp, J, G, F )
 %
 %
 % Usage:
-%   [ Hd, Jd ] = CONDENSED_DUAL_COST_GEN( Hp, J, G, F )
+%   [ Hd, Jd ] = GEN_COST( Hp, J, G, F )
 %
 % Inputs:
 %   Hp - The primal Hessian matrix
@@ -27,7 +27,7 @@ function [ Hd, Jd ] = condensed_dual_cost_gen( Hp, J, G, F )
 %   Jd - The dual initial state matrix
 %
 %
-% See also CONDENSED_PRIMAL_COST_GEN,  CONDENSED_PRIMAL_CONSTRAINT_GEN
+% See also CONDENSED.PRIMAL.GEN_COST,  CONDENSED.PRIMAL.GEN_CON_INEQ
 %
 % Created by: Ian McInerney
 % Created on: September 19, 2018

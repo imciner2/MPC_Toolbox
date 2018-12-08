@@ -1,5 +1,5 @@
-function [ u ] = condensed_dual_primal_recovery( y, x0, Hp, J, G )
-%CONDENSED_DUAL_PRIMAL_RECOVERY Recover the primal solution from the dual optimal
+function [ u ] = recover_primal( y, x0, Hp, J, G )
+%RECOVER_PRIMAL Recover the primal solution from the dual optimal
 %
 % Recover the primal optimal solution from the dual optimal solution.
 %
@@ -13,7 +13,7 @@ function [ u ] = condensed_dual_primal_recovery( y, x0, Hp, J, G )
 %
 %
 % Usage:
-%   [ u ] = CONDENSED_DUAL_COST_GEN( y, x0, Hp, J, G )
+%   [ u ] = RECOVER_PRIMAL( y, x0, Hp, J, G )
 %
 % Inputs:
 %   y  - The dual optimal solution
@@ -26,8 +26,8 @@ function [ u ] = condensed_dual_primal_recovery( y, x0, Hp, J, G )
 %   u - The primal optimal solution
 %
 %
-% See also CONDENSED_PRIMAL_COST_GEN,  CONDENSED_PRIMAL_CONSTRAINT_GEN,
-% CONDENSED_DUAL_COST_GEN
+% See also CONDENSED.PRIMAL.GEN_COST,  CONDENSED.PRIMAL.GEN_CON_INEQ,
+% CONDENSED.DUAL.GEN_COST
 %
 % Created by: Ian McInerney
 % Created on: November 17, 2018

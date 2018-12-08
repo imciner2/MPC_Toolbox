@@ -1,12 +1,12 @@
-function [ Phi ] = condensed_initial_gen( A, N )
-%CONDENSED_INITIAL_GEN Generate the initial state mapping matrix
+function [ Phi ] = gen_initial( A, N )
+%GEN_INITIAL Generate the initial state mapping matrix
 %
 % Create the condensed initial state mapping matrix for the linear
 % time-invariant MPC problem.
 %
 %
 % Usage:
-%   [ Phi ] = CONDENSED_INITIAL_GEN( A, N )
+%   [ Phi ] = GEN_INITIAL( A, N )
 %
 % Inputs:
 %   A - The state transition matrix

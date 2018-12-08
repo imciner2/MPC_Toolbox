@@ -1,6 +1,5 @@
-function [ H ] = gen_pred_sparse_initial( A, B, N )
-%GEN_PRED_SPARSE_INITIAL Generate prediction matrix with initial state as a
-%variable
+function [ Aeq ] = gen_con_eq( N, A, B )
+%GEN_CON_EQ Generate the equality constraints for the linear dynamics
 %
 % Generate the prediction matrix for a MPC problem that assumes the initial
 % state is included in the variable vector.
@@ -15,15 +14,15 @@ function [ H ] = gen_pred_sparse_initial( A, B, N )
 %   Syst. Technol., vol. 22, no. 3, pp. 1006–1017, 2014.
 %
 % Usage:
-%   [ H ] = gen_pred_sparse_initial( A, B, N );
+%   [ Aeq ] = GEN_CON_EQ( N, A, B );
 %
 % Inputs:
+%   N - The horizon length
 %   A - The discrete-time system state transition matrix
 %   B - The discrete-time system input matrix
-%   N - The horizon length
 %
 % Outputs:
-%   H - The prediction matrix (in sparse form)
+%   Aeq - The equality constraints for the linear dynamics
 %
 %
 % Created by: Ian McInerney
@@ -39,6 +38,7 @@ function [ H ] = gen_pred_sparse_initial( A, B, N )
 [numStates, ~] = size(A);
 [~, numInputs] = size(B);
 
+
 %% Create the matrix block to use
 I = eye(numStates);
 Z = zeros(numStates, numInputs);
@@ -47,23 +47,24 @@ comp2 = [ A, B];
 
 
 %% Create the main part of the Matrix
-H = speye(N+1);
-H = kron(H,comp1);
+Aeq = speye(N+1);
+Aeq = kron(Aeq,comp1);
+
 
 %% Remove the last columns
-H = H(:, 1:(end-numInputs));
+Aeq = Aeq(:, 1:(end-numInputs));
+
 
 %% Add in the system dynamics
 G = speye(N);
 G = kron(G, comp2);
 
-[~, c] = size(H);
+[~, c] = size(Aeq);
 Z1 = zeros( numStates, c);
 Z2 = zeros(numStates*N, numStates);
 G = [Z1;
       G, Z2];
-H = H + G;
-
+Aeq = Aeq + G;
 
 
 end

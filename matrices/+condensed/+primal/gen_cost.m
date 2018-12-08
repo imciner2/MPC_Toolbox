@@ -1,5 +1,5 @@
-function [ H, J ] = condensed_primal_cost_gen( N, A, B, Q, R, varargin )
-%CONDENSED_PRIMAL_COST_GEN Generate the matrices for the condensed primal cost
+function [ H, J ] = gen_cost( N, A, B, Q, R, varargin )
+%GEN_COST Generate the matrices for the condensed primal cost
 %
 % Create the Hessian matrix and linear-term matrix for the cost function 
 % of the condensed primal form for linear time-invariant MPC problem.
@@ -18,9 +18,9 @@ function [ H, J ] = condensed_primal_cost_gen( N, A, B, Q, R, varargin )
 %
 %
 % Usage:
-%   [ H, J ] = CONDENSED_PRIMAL_COST_GEN( N, A, B, Q, R )
-%   [ H, J ] = CONDENSED_PRIMAL_COST_GEN( N, A, B, Q, R, P )
-%   [ H, J ] = CONDENSED_PRIMAL_COST_GEN( N, A, B, Q, R, P, S )
+%   [ H, J ] = GEN_COST( N, A, B, Q, R )
+%   [ H, J ] = GEN_COST( N, A, B, Q, R, P )
+%   [ H, J ] = GEN_COST( N, A, B, Q, R, P, S )
 %
 % Inputs:
 %   N - The horizon length
@@ -35,7 +35,7 @@ function [ H, J ] = condensed_primal_cost_gen( N, A, B, Q, R, varargin )
 %   H - The Hessian matrix
 %   J - The linear-term matrix
 %
-% see also: CONDENSED_PRIMAL_CONSTRAINT_GEN
+% see also: CONDENSED.PRIMAL.GEN_CON_INEQ
 %
 % Created by: Ian McInerney
 % Created on: May 21, 2018
@@ -67,8 +67,8 @@ end
 
 
 %% Create the prediction matrix and initial condition matrix
-Phi   = condensed_initial_gen(A, N);
-Gamma = condensed_prediction_gen(A, B, N);
+Phi   = condensed.gen_initial(A, N);
+Gamma = condensed.gen_prediction(A, B, N);
 
 
 %% Create the diagonal matrices for the Q, R and S matrices
