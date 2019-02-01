@@ -1,4 +1,4 @@
-function [ uib ] = uib_dgp( Hd, Jd, g, Lp, Ld, eps_g, eps_V, eps_z, eps_xi )
+function [ uib ] = uib_dgp( D, Lp, Ld, eps_g, eps_V, eps_z, eps_xi )
 %UIB_DGP Compute the upper iteration bound for Dual Gradient Projection
 %
 % This function will compute the number of iterations required for a
@@ -12,12 +12,10 @@ function [ uib ] = uib_dgp( Hd, Jd, g, Lp, Ld, eps_g, eps_V, eps_z, eps_xi )
 %
 %
 % Usage:
-%   [ uib ] = UIB_DGP( Hd, Jd, g, L, Lv, eps_g, eps_V, eps_z, eps_xi );
+%   [ uib ] = UIB_DGP( D, N, Hd, Jd, g, Lp, Ld, eps_g, eps_V, eps_z, eps_xi );
 %
 % Inputs:
-%   Hd     - The dual Hessian matrix
-%   Jd     - The dual linear matrix multiplying the initial state
-%   g      - The vector from the RHS of the primal constraints
+%   D      - The Upper Dual Bound for the QP problem
 %   Lp     - Largest eigenvalue of the primal Hessian
 %   Ld     - Largest eigenvalue of the dual Hessian
 %   eps_g  - Upper bound on the constraint satisfaction error
@@ -38,29 +36,9 @@ function [ uib ] = uib_dgp( Hd, Jd, g, Lp, Ld, eps_g, eps_V, eps_z, eps_xi )
 %   1.0 - Initial release
 
 
-%% Compute the upper dual bound
-rho = 1000;
-for (i=1:1:10)
-    % Compute the bound
-    [D, eps] = udb_optimize(Hd, Jd, g, rho);
-    
-    % See if the error is small
-    if (eps < 1e-6)
-        break;
-    end
-    
-    % If it is not, increase the penalty and try again
-    rho = rho*10;
-end
-
-if ( (i == 10) && (eps > 1e-6) )
-    warning(['UDB calculation has complimentarity error ' num2str(eps)]);
-end
-
-
 %% Check two conditions
 c1 = 2*D*eps_xi;
-c2 = eps_g*(Lp*eps_xi^2 + 2*D*eps_xi) / (eps_g - 2*D*eps_xi);
+c2 = eps_g*(Lp*eps_z^2 + 2*D*eps_xi) / (eps_g - 2*D*eps_xi);
 
 if ( (eps_g <= c1) || (eps_V <= c2) )
     warning('Conditions on the error have not been met');

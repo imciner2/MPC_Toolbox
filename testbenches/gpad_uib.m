@@ -27,22 +27,13 @@ Ce = [ 1
 E  = E./(kron( ones(1, ni), abs(Ce) ));
 Ce = Ce./abs(Ce);
 
-D0 = [ 1,  0;
-      -1,  0;
-       0,  1;
-       0, -1];
-Cd0 = [15;
-       15;
-       15;
-       15];
-
 
 %% Create the MPC matrices
 N = 2;
 
-[Hp, Jp]  = condensed.primal.gen_cost(N, A, B, Q, R, Q);
-[G, F, g] = condensed.primal.gen_con_ineq(N, A, B, E, Ce);
-[Hd, Jd]  = condensed.dual.gen_cost( Hp, Jp, G, F );
+[Hp, Jp]  = condensed_primal_cost_gen(N, A, B, Q, R, Q);
+[G, F, g] = condensed_primal_constraint_gen(N, A, B, E, Ce);
+[Hd, Jd]  = condensed_dual_cost_gen( Hp, Jp, G, F );
 
 
 L_e = eigs( Hd, 1, 'LM')
@@ -61,17 +52,16 @@ L = L_e
 eps_g = 10^(-3);
 eps_V = 10^(-2);
 
-ub = 15*ones(n,1);
-lb = -ub;
+ub = 15*ones(n, 1);
+lb = -15*ones(n, 1);
 
 jl = ni;
-pCon = { [1,2] };
+pCon = { [1,2] };%, [3,4], [5,6] };
 
-
-%%
-D_cplex_comp = udb_cplex_comp( Hd, Jd, g, D0, Cd0, N, m, pCon )
-D_cplex_milp = udb_cplex_milp( Hp, Jp, G, F, g, D0, Cd0, N, pCon )
-D_bm         = udb_bigM( Hp, Jp, G, F, g, D0, Cd0, N, pCon )
+D_cplex_comp = udb_cplex_comp( Hd, Jd, g, lb, ub, N, m, pCon )
+D_cplex_milp = udb_cplex_milp_orig( Hd, Jd, g, L, lb, ub, N, m, jl )
+D_cplex_full = udb_cplex_milp( Hp, Jp, G, F, g, lb, ub, N, pCon )
+D_bm         = udb_bigM( Hd, Jd, g, L, lb, ub )
 % D_eps        = udb_eps( Hd, Jd, g, lb, ub )
 % D_penalty    = udb_penalty( Hd, Jd, g, lb, ub )
 %D_approx     = udb_quadApprox( Hp, Jp, G, F, g, lb, ub, 1e-4 )

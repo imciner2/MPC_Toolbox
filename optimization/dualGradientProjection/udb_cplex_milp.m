@@ -1,4 +1,4 @@
-function [ Delta, lam ] = udb_cplex_milp( Hp, Jp, G, F, g, D0, Cd0, N, pCon )
+function [ Delta, rel, lam ] = udb_cplex_milp( Hp, Jp, G, F, g, D0, Cd0, N, pCon, varargin )
 %UDB_CPLEX_MILP Solve a MILP to find the upper dual bound
 %
 % This function will solve a MILP given in [1] to find an upper bound on
@@ -21,20 +21,27 @@ function [ Delta, lam ] = udb_cplex_milp( Hp, Jp, G, F, g, D0, Cd0, N, pCon )
 %
 %
 % Usage:
-%   [ Delta ] = UDB_CPLEX_MILP( Hd, Jd, g, L, plb, pub, N, parCon );
+%   [ Delta ] = UDB_CPLEX_MILP( Hd, Jd, g, L, plb, pub, N, pCon );
 %
 % Inputs:
 %   Hd   - The dual Hessian matrix
 %   Jd   - The dual linear matrix multiplying the initial state
 %   g    - The vector from the RHS of the primal constraints
 %   L    - The largest eigenvalue of the Hessian matrix
-%   D0  - LHS for the polyhedral constraint on the initial state
-%   Cd0 - RHS for the polyhedral constraint on the initial state
+%   D0   - LHS for the polyhedral constraint on the initial state
+%   Cd0  - RHS for the polyhedral constraint on the initial state
 %   N    - The horizon length
 %   pcon - 
 %
+% Optional name/vaue pairs:
+%   'Ticks' - The number of ticks to run the optimizer for
+%   'Time' - The number of seconds to run the optimizer for
+%   'Tolerance' - The relative optimality tolerance to solve to
+%                 (between 0 and 1, representing percentages)
+%
 % Output:
 %   Delta - The upper dual bound
+%   rel   - The relative gap between the bound and optimality
 %
 %
 % Created by: Ian McInerney
@@ -50,6 +57,23 @@ function [ Delta, lam ] = udb_cplex_milp( Hp, Jp, G, F, g, D0, Cd0, N, pCon )
 if ( exist('Cplex', 'class') ~= 8 )
     error('CPLEX not found. Please install CPLEX and make sure it is on the path to run this function.');
 end
+
+
+%% Create the CPLEX object
+prob = Cplex('prob');
+prob.Model.sense = 'maximize';
+
+
+%% Parse the input arguments into options
+p = inputParser;
+addParameter(p, 'Ticks', 1e75);
+addParameter(p, 'Time', 1e75);
+addParameter(p, 'Tolerance', 1e-4);
+parse(p,varargin{:});
+
+prob.Param.dettimelimit.Cur = p.Results.Ticks;
+prob.Param.timelimit.Cur = p.Results.Time;
+prob.Param.mip.tolerances.mipgap.Cur = p.Results.Tolerance;
 
 
 %% Extract variable size information
@@ -91,11 +115,6 @@ in_n = -in_p;
 % Vectors of the inital constraint set size
 in0_p = inf(n0, 1);
 in0_n = -in0_p;
-
-
-%% Create the CPLEX object
-prob = Cplex('prob');
-prob.Model.sense = 'maximize';
 
 
 %%
@@ -230,9 +249,6 @@ prob.Param.mip.display.Cur = 0;
 prob.Param.output.clonelog.Cur = 0;
 prob.DisplayFunc = [];
 
-% The problem should have a solution that is greater than m
-%prob.Param.mip.tolerances.lowercutoff.Cur = nd;
-
 % Solve the problem
 prob.solve();
 
@@ -243,7 +259,6 @@ prob.solve();
 if ( (prob.Solution.status ~= 101) && (prob.Solution.status ~= 102) )
    warning(['CPLEX error: ', prob.Solution.statusstring]);
    Delta = NaN;
-   return;
 end
 
 
@@ -261,6 +276,7 @@ z    = v(    2*nd+1:2*nd+np );
 p    = v( 2*nd+np+1:end  );
 
 % Retrieve the upper dual bound from the objective value
-Delta = prob.Solution.objval;
+Delta = prob.Solution.bestobjval;
+rel   = prob.Solution.miprelgap;
 
 end
