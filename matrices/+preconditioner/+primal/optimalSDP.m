@@ -1,16 +1,15 @@
-function [ P, E, k ] = RichterOptimalPrecond( H, m )
-%RICHTEROPTIMALPRECOND Compute the optimal preconditioner for an MPC problem
+function [ P, E, k ] = optimalSDP( H, m )
+%OPTIMALSDP Compute the optimal preconditioner for an MPC problem
 %
 % This function computes the optimal preconditioner for the condensed MPC
-% problem as described by Ricther in Lemma 9 in
+% problem by solving the SDP described by in Lemma 9 inside
 %   S. Richter, C. N. Jones, and M. Morari, “Computational Complexity
 %   Certification for Real-Time MPC With Input Constraints Based on the
 %   Fast Gradient Method,” IEEE Transactions on Automatic Control,
 %   vol. 57, no. 6, pp. 1391–1403, 2012.
 %
 % The preconditioner matrix P is a left/right reconditioner (e.g. P'*H*P)
-% with a minimum eigenvalue of 1 (this is different then specified by
-% Richter). 
+% with a minimum eigenvalue of 1 (this is different then specified in the paper). 
 %
 % This function requires the YALMIP toolbox (along with a SDP solver) to
 % solve the optimization problem. If the optimization problem errors, then
@@ -18,9 +17,9 @@ function [ P, E, k ] = RichterOptimalPrecond( H, m )
 %
 %
 % Usage:
-%   [ P ] = RICHTEROPTIMALPRECOND( H, m )
-%   [ P, E ] = RICHTEROPTIMALPRECOND( H, m )
-%   [ P, E, k ] = RICHTEROPTIMALPRECOND( H, m )
+%   [ P ] = OPTIMALSDP( H, m )
+%   [ P, E ] = OPTIMALSDP( H, m )
+%   [ P, E, k ] = OPTIMALSDP( H, m )
 %
 % Inputs:
 %   H - The Hessian matrix
