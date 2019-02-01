@@ -10,15 +10,22 @@ function [ u, i ] = fgm_quad( H, b, projOp, L, mu, varargin )
 %   Predictive Control at Megahertz Rates,” IEEE Transactions on Automatic
 %   Control, vol. 59, no. 12, pp. 3238–3251, 2014.
 %
-% The projection function takes in a single vector of variables, and then
-% outputs a single vector of the variables after they are projected into
-% the feasible space. For example, to implement box constraints -5 <= x <= 5,
-% the projection function is
+% This algorithm solves an optimization problem of the form
+%   min  0.5*u'*H*u + q'*u
+%   s.t. G*u <= b
+% where for linear time-invariant MPC, q = J'*x0 and b = F*x0 + g.
+
+% The inequality constraint is handled through a projection operation onto
+% the feasible set. The projection function is supplied by the user, and 
+% takes in a single vector of variables, and then outputs a single vector
+% of the variables after they are projected into the feasible set. For
+% example, to implement box constraints -5 <= x <= 5, the projection
+% function is:
 %   projOp = @(x) min( 5, max(-5, x) );
 %
-% This algorithm can utilize either a constant step size scheme where beta is
-% held the same across all iterations (calculated using the formula in the 
-% above paper), or it can utilize a variable stepsize.
+% This algorithm can utilize either a constant step size scheme where beta
+% is held the same across all iterations (calculated using the formula in
+% the above paper), or it can utilize a variable stepsize.
 %
 % This algorithm can utilize one of 4 different stopping criteria:
 %   'Iterations' - Terminate after the specified number of iterations
@@ -150,7 +157,6 @@ while termFunc(i, x, y, x_n, y_n)
     end
     
     % Use acceleration to get the next point
-%    y_n = (1 + beta)*x_n - beta*x;
     y_n = x_n + beta*(x_n - x);
 end
 

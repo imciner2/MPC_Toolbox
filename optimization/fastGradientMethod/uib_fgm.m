@@ -109,7 +109,7 @@ switch (type)
         if ( max(max(isnan(Q))) || max(max(isnan(R))) )
             error('Must supply sys, Q and R if warm-start lyapunov delta computation is selected.');
         end
-        delta = condensed_primal_hessian_cond_lyap(sys, Q, R);
+        delta = condensed_primal_hessian_cond_same(sys, Q, R);
         delta = delta*eps;
         
     otherwise
