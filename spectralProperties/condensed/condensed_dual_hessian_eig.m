@@ -54,6 +54,11 @@ if ( sys.Ts == 0 )
 end
 
 
+%% Create the matrix symbol for the prediction matrix
+z = tf('z', sys.Ts);
+Pgam = z*sys;
+
+
 %% Parse the input arguments
 p = inputParser;
 addOptional(p, 'D', []);
@@ -81,7 +86,7 @@ Dbar = [D;
 Ebar = [zeros(nD,m);
         E];
 
-PG = Dbar*sys + Ebar;
+PG = Dbar*Pgam + Ebar;
 
 
 %% If S is present, use the triangle-inequality bound
@@ -101,8 +106,6 @@ end
 
 
 %% Create the matrix symbol for the primal Hessian
-z = tf('z', sys.Ts);
-Pgam = z*sys;
 PHp = Pgam'*Q*Pgam + R;
 
 
