@@ -58,8 +58,8 @@ parse(p,varargin{:});
 D = p.Results.D;
 
 % Extract the number of constraints
-[nic, ~] = size(E);
-[nsc, ~] = size(D);
+[nE, ~] = size(E);
+[nD, ~] = size(D);
 
 
 %% Create the matrix symbol for the prediction matrix
@@ -83,11 +83,7 @@ for i = 0:1:(N-1)
     z = exp(1j*(-pi/2 + 2*pi*i/N));
 
     % Compute the matrix symbol at this point
-    if ( isempty(D) )
-        M_c = PG;
-    else
-        M_c = evalfr( PG, z );
-    end
+    M_c = evalfr( PG, z );
 
     % Compute the singular values of the matrix symbol
     si = svd( M_c );
