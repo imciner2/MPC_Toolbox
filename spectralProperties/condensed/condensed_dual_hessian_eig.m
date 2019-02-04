@@ -1,11 +1,24 @@
 function [ maxE, varargout ] = condensed_dual_hessian_eig( sys, Q, R, E, varargin )
 %CONDENSED_DUAL_HESSIAN_EIG Compute the largest eigenvalue of the dual Hessian
 %
+% This function will compute the maximal eigenvalue of the dual Hessian matrix
+% for the condensed LTI MPC.
+%
+% If no input-state cross-term weighting matrix (the S matrix) is supplied, or
+% it is empty, then the Toeplitz nature of the matrix will be used. If S is 
+% supplied, then the triangle-inequality bound on the matrix eigenvalue will
+% be used.
+%
+% This function gives the option to either estimate the largest eigenvalue
+% (using the H-infinity norm) or search for the actual eigenvalue by sampling
+% the unit circle with the provided number of samples.
+%
+%
 % Usage:
 %   [ maxE ] = CONDENSED_DUAL_HESSIAN_EIG( sys, Q, R, E );
 %   [ maxE ] = CONDENSED_DUAL_HESSIAN_EIG( sys, Q, R, E, D );
 %   [ maxE ] = CONDENSED_DUAL_HESSIAN_EIG( sys, Q, R, E, D, S );
-%   [ maxE, minE ] = CONDENSED_DUAL_HESSIAN_EIG( sys, Q, R, E, D, opts );
+%   [ maxE, minE ] = CONDENSED_DUAL_HESSIAN_EIG( sys, Q, R, E, D, S, opts );
 %
 % Inputs:
 %   sys  - The physical system's model  

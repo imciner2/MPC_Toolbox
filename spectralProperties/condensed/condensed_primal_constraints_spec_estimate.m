@@ -1,6 +1,31 @@
-function [ e ] = condensed_primal_constraints_spec_estimate( sys, N, E, varargin )
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+function [ s ] = condensed_primal_constraints_spec_estimate( sys, N, E, varargin )
+%CONDENSED_PRIMAL_CONSTRAINTS_SPEC_ESTIMATE Estimate the spectrum of the condensed constraint matrix
+%
+% This function will estimate the singular value spectrum of the finite-horizon
+% primal constraint matrix using the Toeplitz theory (without actually forming
+% the matrix).
+%
+%
+% Usage:
+% 	[ s ] = CONDENSED_PRIMAL_CONSTRAINTS_SPEC_ESTIMATE( sys, N, E );
+% 	[ s ] = CONDENSED_PRIMAL_CONSTRAINTS_SPEC_ESTIMATE( sys, N, E, D );
+%
+% Inputs:
+%   sys  - The physical system's model  
+%   E    - The stage input constraints
+%   D    - The stage state constraints
+%
+% Output:
+%   s - The singular values in sorted order
+%
+%
+% Created by: Ian McInerney
+% Created on: November 13, 2018
+% Version: 1.0
+% Last Modified: November 13, 2018
+%
+% Revision History
+%   1.0 - Initial release
 
 %% Make sure it is a state-space system for easy access of the matrices
 sys = ss(sys);
@@ -37,42 +62,42 @@ D = p.Results.D;
 [nsc, ~] = size(D);
 
 
-%% Create the Toeplitz symbol's system for the dual Hessian
-sys1 = z*sys;
-
-if ( isempty(D) )
-    Gsys = E;
-else
-    Dsys = D*sys.A*(1/z)*sys1 + D*sys.B;
-    
-    if ( isempty(E) )
-        Gsys = Dsys;
-    else
-        Gsys = [Dsys;
-                 E];
-    end
-end
+%% Create the matrix symbol for the prediction matrix
+z = tf('z', sys.Ts);
+Pgam = z*sys;
 
 
-%% Find the largest eigenvalue
-e = [];
+%% Create the matrix symbol for the constraints
+Dbar = [D;
+        zeros(nE, n)];
+
+Ebar = [zeros(nD,m);
+        E];
+
+PG = Dbar*Pgam + Ebar;
+
+
+%% Find the singular values at the sampled points
+s = [];
 for i = 0:1:(N-1)
     z = exp(1j*(-pi/2 + 2*pi*i/N));
 
     % Compute the matrix symbol at this point
     if ( isempty(D) )
-        M_c = Gsys;
+        M_c = PG;
     else
-        M_c = evalfr( Gsys, z );
+        M_c = evalfr( PG, z );
     end
 
     % Compute the singular values of the matrix symbol
-    ei = svd( M_c );
-    e = [e;
-         ei];
+    si = svd( M_c );
+    s = [s;
+         si];
 end
 
-e = sort( e );
+
+% Sort the singular values into numerical order
+s = sort( s );
 
 end
 

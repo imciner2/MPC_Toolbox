@@ -1,6 +1,32 @@
 function [ e ] = condensed_dual_hessian_spec_estimate( sys, N, Q, R, E, varargin )
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+%CONDENSED_DUAL_HESSIAN_SPEC_ESTIMATE Estimate the spectrum of the condensed dual Hessian
+%
+% This function will estimate the spectrum of the finite-horizon dual Hessian
+% matrix using the Toeplitz theory (without actually forming the matrix).
+%
+%
+% Usage:
+% 	[ e ] = CONDENSED_DUAL_HESSIAN_SPEC_ESTIMATE( sys, N, Q, R, E );
+% 	[ e ] = CONDENSED_DUAL_HESSIAN_SPEC_ESTIMATE( sys, N, Q, R, E, D );
+%
+% Inputs:
+%   sys  - The physical system's model  
+%   Q    - The Q matrix
+%   R    - The R matrix
+%   E    - The stage input constraints
+%   D    - The stage state constraints
+%
+% Output:
+%   e - The eigenvalues in sorted order
+%
+%
+% Created by: Ian McInerney
+% Created on: November 18, 2018
+% Version: 1.0
+% Last Modified: November 18, 2018
+%
+% Revision History
+%   1.0 - Initial release
 
 %% Make sure it is a state-space system for easy access of the matrices
 sys = ss(sys);
@@ -58,7 +84,7 @@ PG = Dbar*Pgam + Ebar;
 PHd1 = PG'*PG*inv(PHp);
 
 
-%% Find the largest eigenvalue
+%% Find the eigenvalues at the sampled points
 e = [];
 for i = 0:1:(N-1)
     z = exp(1j*(-pi/2 + 2*pi*i/N));
@@ -74,6 +100,8 @@ for i = 0:1:(N-1)
          ei];
 end
 
+
+%% Sort the eigenvalues into numerical order
 e = sort( e );
 
 end

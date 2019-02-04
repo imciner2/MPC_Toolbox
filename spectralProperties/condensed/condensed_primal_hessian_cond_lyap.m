@@ -65,7 +65,7 @@ if ( (nargout-1) > 2 )
 end
 
 
-%% Get the eigenvalue estimates for the 
+%% Get the eigenvalue estimates for the P=Q matrix
 [~, maxE_q, minE_q] = condensed_primal_hessian_cond_same( sys, Q, R, S);
 
 
