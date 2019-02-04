@@ -1,5 +1,5 @@
-function [ eigen ] = condensed_hessian_spec( A, B, C, Q, R, N )
-%CONDENSED_HESSIAN_SPEC Estimate the eigenvalues of the condensed Hessian
+function [ eigen ] = condensed_primal_hessian_spec( A, B, C, Q, R, N )
+%CONDENSED_PRIMAL_HESSIAN_SPEC Estimate the eigenvalues of the condensed primal Hessian
 %
 % Estimate the eigenvalues of the condensed hessian matrix for a linear
 % time-invariant system as the horizon length goes to infinity. This
@@ -10,7 +10,7 @@ function [ eigen ] = condensed_hessian_spec( A, B, C, Q, R, N )
 %
 %
 % Usage:
-%   [ eigen ] = CONDENSED_HESSIAN_SPEC( A, B, C, Q, R, N )
+%   [ eigen ] = CONDENSED_PRIMAL_HESSIAN_SPEC( A, B, C, Q, R, N )
 %
 % Inputs:
 %   A - The state transition matrix
