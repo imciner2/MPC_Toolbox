@@ -1,18 +1,18 @@
 function [ c, f, varargout ] = fgm_fp_fraclength( sys, N, Q, R, roundMode )
 %FGM_FP_FRACLENGTH Compute the fraction length needed for FGM in fixed-point
 %
-%   This function will compute the minimum number of fraction bits needed
-%   when implementing the Fast Gradient Method in embedded MPC.
+% This function will compute the minimum number of fraction bits needed
+% when implementing the Fast Gradient Method in embedded MPC.
 %
-%   roundMode specifies the type of rounding that occurs after an
-%   arithmetic operation. Valid rounding modes are:
-%    * 'nearest' - Round to nearest
-%    * 'zero'    - Round to zero
-%    * 'ceil'    - Round to +infinity
-%    * floor'    - Round to -infinity
+% The input roundMode specifies the type of rounding that occurs after an
+% arithmetic operation. Valid rounding modes are:
+%   * 'nearest' - Round to nearest
+%   * 'zero'    - Round to zero
+%   * 'ceil'    - Round to +infinity
+%   * 'floor'   - Round to -infinity
 %
-%   In the round to nearest and round to zero modes, the horizon length can
-%   be set to infinity to compute a horizon-independent fraction length.
+% In the round to nearest and round to zero modes, the horizon length can
+% be set to infinity to compute a horizon-independent fraction length.
 %
 %
 % Usage:
@@ -32,7 +32,7 @@ function [ c, f, varargout ] = fgm_fp_fraclength( sys, N, Q, R, roundMode )
 %   eta - Rounding stability margin for H
 %
 %
-% See also: 
+% See also: FGM_FP_INTLENGTH
 %
 % Created by: Ian McInerney
 % Created on: March 9, 2019
@@ -53,8 +53,8 @@ D = sys.D;
 P = dlyap(A', Q);
 
 %% Create some helper variables
-[n, m] = size(B);
-I = eye(n);
+[k, m] = size(B);
+I = eye(k);
 
 
 %% Make sure it is a valid rounding mode
@@ -121,26 +121,29 @@ if ( N == inf )
         error('Infinite horizon is only supported with nearest or zero rounding');
     end
     
-    % Iterate over the diagonal numbers
-    f = NaN;
+    % Iterate over the diagonal numbers to compute the norm
     for (k=0:1:60)
         if ( k == 0 )
             F = B'*Phat*(A^k)*B + Rhat;
         else
             F = B'*Phat*(A^k)*B;
         end
-        Nhinf = norm( F, inf );
+        Nhinf(k+1) = norm(F, inf);
+    end
+    
+    f = NaN;
+    for (f=0:1:60)
+        eps = epsFunc(f);
         
-        % Compute the number of bits that would make this diagonal non-zero
-        % and the equivalent rounding error
-        fz = floor( -log2( Nhinf ) );
-        if ( fz <= 0 )
-            % In this case, no fraction bits are needed
-            fz = 0;
+        % Find the diagonal which is just above this round-off error
+        k = find( Nhinf >= eps, 1, 'last');
+        if ( isempty(k) )
+            continue;
         end
+        k = k-1;
         
-        eps = epsFunc(fz);
-        EG = eps*m*(2*k - 1);
+         % Compute the contribution of EG to the error
+        EG = abs( eps*m*(2*k - 1) );
         
         if ( EG >= eta )
             % If EG is greater than the margin, this won't work
@@ -159,7 +162,6 @@ if ( N == inf )
         
         if ( ET + EG < eta )
             % The two errors are less than the margin, save result and end
-            f = fz;
             break;
         end 
     end
